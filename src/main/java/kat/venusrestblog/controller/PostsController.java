@@ -11,6 +11,7 @@ import java.util.List;
 
 public class PostsController {
     public List<Post> posts = new ArrayList<>();
+    private long nextId = 1;
 @RequestMapping(value = "", method = RequestMethod.GET)
 public List<Post> fetchPosts (){
     return posts;
@@ -20,7 +21,12 @@ public List<Post> fetchPosts (){
     public Post fetchPostsById (@PathVariable long id){
 //    search through the list of posts and return the post that matches the given id
         Post post = findPostById(id);
-        throw new RuntimeException("I don't know what I am doing");
+        if(post == null){
+            throw new RuntimeException("I don't know what I am doing");
+        }else{
+            return post;
+        }
+
     }
     private Post findPostById ( long id){
         for (Post post:posts) {
@@ -33,7 +39,9 @@ public List<Post> fetchPosts (){
 
     @PostMapping("")
     public void createPost(@RequestBody Post newPost){
-        System.out.println(newPost);
+        newPost.setId(nextId);
+        nextId++;
+
         posts.add(newPost);
     }
 
@@ -41,6 +49,10 @@ public List<Post> fetchPosts (){
     public void deletePostsById (@PathVariable long id){
 //    search through the list of posts and delete the post that matches the given id
         Post post = findPostById(id);
+        if( post != null){
+            posts.remove(post);
+            return;
+        }
         throw new RuntimeException("I don't know what I am doing");
     }
     @PutMapping("/{id}")
