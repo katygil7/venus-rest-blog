@@ -13,7 +13,7 @@ public class UsersController {
     private List<User> users = new ArrayList<>();
     private long nextId = 1;
 
-    @RequestMapping(value = "")
+    @GetMapping(value = "")
     public List<User> fetchUsers (){
         return users;
     }

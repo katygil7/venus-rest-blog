@@ -12,12 +12,12 @@ import java.util.List;
 public class PostsController {
     public List<Post> posts = new ArrayList<>();
     private long nextId = 1;
-@RequestMapping(value = "", method = RequestMethod.GET)
+@GetMapping (value = "")
 public List<Post> fetchPosts (){
     return posts;
 }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public Post fetchPostsById (@PathVariable long id){
 //    search through the list of posts and return the post that matches the given id
         Post post = findPostById(id);
@@ -45,7 +45,7 @@ public List<Post> fetchPosts (){
         posts.add(newPost);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public void deletePostsById (@PathVariable long id){
 //    search through the list of posts and delete the post that matches the given id
         Post post = findPostById(id);
@@ -60,7 +60,7 @@ public List<Post> fetchPosts (){
 //    find the post you want to update in the posts list
         Post post = findPostById(id);
         if(post == null){
-            post = updatedPost;
+            System.out.println("Post not found");
         }else{
             if (updatedPost.getTitle() != null){
                 post.setTitle(updatedPost.getTitle());
@@ -68,6 +68,8 @@ public List<Post> fetchPosts (){
             if(updatedPost.getContent() != null){
                 post.setContent(updatedPost.getContent());
             }
+            return;
         }
+        throw new RuntimeException("Post not found");
     }
 }
