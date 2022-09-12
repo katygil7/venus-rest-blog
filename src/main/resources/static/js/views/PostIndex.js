@@ -75,18 +75,11 @@ export function setupSaveHandler() {
     });
 }
     function editPostHandlers() {
-        const editButtons = document.querySelector(".editPost");
-        const tittleField = document.querySelector("#title");
-        const contentField = document.querySelector("#content");
+        const editButtons = document.querySelectorAll(".editPost");
         for (let i = 0; i < editButtons.length; i++) {
             editButtons[i].addEventListener("click", function (event) {
-                if ((tittleField.value === "") || (contentField.value === "")) {
-                    console.log("blank");
-                } else {
-                    let editPost = {
-                        title: tittleField.value,
-                        content: contentField.value
-                    }
+                const postId = parseInt(this.getAttribute("data-id"));
+
                     let request = {
                         method: "PUT",
                         headers: {"content-Type": "application/json"},
@@ -96,7 +89,7 @@ export function setupSaveHandler() {
                     fetch(url, request)
                         .then(response => response.json());
                     location.reload();
-                }
+
             });
         }
     }
