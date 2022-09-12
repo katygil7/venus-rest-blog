@@ -1,7 +1,8 @@
 import CreateView from "../createView.js";
 
 export default function PostIndex(props) {
-    const postsHTML = generatePostsHTML(props.posts);
+    const postsHTML = generatePostsHTML(props.posts)
+    // posts = props.posts;
     return `
         <header>
             <h1>Posts Page</h1>
@@ -18,8 +19,7 @@ export default function PostIndex(props) {
                 <input id="title" name="title" type="text" placeholder="Enter tittle"><br>
                 <label for="content">Content</label><br>
                 <textarea name="content" id="content" cols="50" rows="10" placeholder="Enter content"></textarea>
-                <button id="addPost" name="addPost">Add post</button>
-                <button id="deletePost" name="deletePost">Delete Post</button>
+                <button id="savePost" name="savePost">Save</button>
             </form>
         </main>
     `;
@@ -48,12 +48,13 @@ function generatePostsHTML(posts) {
     return postsHTML;
 }
 
-export function addPostHandler(){
-    const addButton = document.querySelector("#addPost")
+export function setupSaveHandler() {
+    const saveButton = document.querySelector("#savePost")
     console.log("Doing post setup")
-    addButton.addEventListener("click", function (event){
+    saveButton.addEventListener("click", function (event) {
         const titleField = document.querySelector("#title");
         const contentField = document.querySelector("#content");
+        //make the new updated post
         let newPost = {
             title: titleField.value,
             content: contentField.value,
@@ -65,29 +66,30 @@ export function addPostHandler(){
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(newPost)
         }
-
-        fetch("http://localhost:8080/api/posts", request)
-            .then(response => {
+        let url = "http://localhost:8080/api/posts"
+        fetch(url, request)
+            .then(function (response) {
                 console.log(response.status);
                 CreateView("/posts");
             })
     });
-    function editPostHandlers(){
+}
+    function editPostHandlers() {
         const editButtons = document.querySelector(".editPost");
         const tittleField = document.querySelector("#title");
         const contentField = document.querySelector("#content");
-        for (let i = 0; i < editButtons.length; i++){
-            editButtons[i].addEventListener("click", function (event){
-                if ((tittleField.value === "") || (contentField.value === "")){
-
-                }else{
+        for (let i = 0; i < editButtons.length; i++) {
+            editButtons[i].addEventListener("click", function (event) {
+                if ((tittleField.value === "") || (contentField.value === "")) {
+                    console.log("blank");
+                } else {
                     let editPost = {
                         title: tittleField.value,
                         content: contentField.value
                     }
                     let request = {
                         method: "PUT",
-                        headers: {"content-Type":"application/json"},
+                        headers: {"content-Type": "application/json"},
                         body: JSON.stringify(editPost)
                     }
                     let url = `http://localhost:8080/api/posts/${editButtons[i].getAttribute("data-id")}`;
@@ -98,24 +100,31 @@ export function addPostHandler(){
             });
         }
     }
-    function deletePostHandlers(){
-        const deleteButtons = document.querySelector(".deletePost");
-        for (let i = 0; i < deleteButtons.length; i++ ){
-            deleteButtons[i].addEventListener("click", function (event){
-                let request = {
-                    method: "DELETE",
-                    headers: {"Content-Type":"application/json"},
-                }
-                let url = `http://localhost:8080/api/posts/${deleteButtons[i].getAttribute("data-id")}`
-                fetch(url, request)
-                    .then(response => response.json());
-                    location.reload();
-            });
+
+    function deletePostHandlers() {
+        const deleteButtons = document.querySelectorAll(".deletePost");
+        for (let i = 0; i < deleteButtons.length; i++) {
+            deleteButtons[i].addEventListener("click", function (event) {
+                console.log("delete");
+                const postId = this.getAttribute("data-id")
+                deletePost(postId);
+            })
         }
     }
-    export function postSetup(){
-        addPostHandler();
+    function deletePost (){
+        let request = {
+            method: "DELETE",
+            headers: {"Content-Type": "application/json"},
+        }
+        let url = "http://localhost:8080/api/posts/" + postId;
+        fetch(url, request)
+            .then(response => response.json());
+        location.reload();
+    }
+
+
+    export function PostSetup() {
+        setupSaveHandler();
         editPostHandlers();
         deletePostHandlers();
     }
-}
