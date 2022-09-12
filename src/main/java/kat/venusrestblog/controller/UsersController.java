@@ -1,6 +1,5 @@
 package kat.venusrestblog.controller;
 
-import kat.venusrestblog.data.Post;
 import kat.venusrestblog.data.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -8,18 +7,18 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping(value = "/api/users", produces = "application/json")
 public class UsersController {
     private List<User> users = new ArrayList<>();
     private long nextId = 1;
 
-    @RequestMapping(value = "", method = RequestMethod.GET)
+    @RequestMapping(value = "")
     public List<User> fetchUsers (){
         return users;
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public User fetchUsersById (@PathVariable long id){
 //    search through the list of posts and return the post that matches the given id
         User user = findUserById(id);
@@ -45,7 +44,7 @@ public class UsersController {
         users.add(newUser);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public void deleteUserById (@PathVariable long id){
 //    search through the list of posts and delete the post that matches the given id
         User user = findUserById(id);
