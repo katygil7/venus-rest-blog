@@ -16,7 +16,7 @@ public class CategoriesController {
     private Category fetchPostsByCategory(@RequestParam String categoryName){
         Category category = new Category(1L,categoryName, null);
         ArrayList<Post> fakePost = new ArrayList<>();
-        fakePost.add(new Post(1L,"Bunnies", "fdf", ));
+//        fakePost.add(new Post(1L,"Bunnies", "fdf", ));
         return category;
 
     }
