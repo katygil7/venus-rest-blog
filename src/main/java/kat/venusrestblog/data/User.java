@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDate;
+import java.util.Collection;
 
 
 @Getter
@@ -19,4 +20,6 @@ public class User {
     private String password;
     private LocalDate createdAt;
     private UserRole role;
+
+    private Collection<Post> posts;
 }

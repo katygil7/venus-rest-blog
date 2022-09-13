@@ -31,6 +31,7 @@ function generatePostsHTML(posts) {
         <tr>
             <th scope="col">Title</th>
             <th scope="col">Content</th>
+            <th scope="col">Author</th>
         </tr>
         </thead>
         <tbody>
@@ -40,6 +41,7 @@ function generatePostsHTML(posts) {
         postsHTML += `<tr>
             <td>${post.title}</td>
             <td>${post.content}</td>
+            <td>${post.author.userName}</td>
             <td><button data-id=${post.id} class="editPost">Edit</button></td>
             <td><button data-id=${post.id} class="deletePost">Delete</button></td>
             </tr>`;

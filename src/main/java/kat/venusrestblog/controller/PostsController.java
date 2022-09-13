@@ -1,6 +1,7 @@
 package kat.venusrestblog.controller;
 
 import kat.venusrestblog.data.Post;
+import kat.venusrestblog.data.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -40,6 +41,15 @@ public List<Post> fetchPosts (){
     @PostMapping("")
     public void createPost(@RequestBody Post newPost){
         newPost.setId(nextId);
+
+//        using a fake author for the post
+        User fakeAuthor = new User ();
+        fakeAuthor.setId(99);
+        fakeAuthor.setUserName("fake author");
+        fakeAuthor.setEmail("fakeauthor@stuf.com");
+        newPost.setAuthor(fakeAuthor);
+
+
         nextId++;
 
         posts.add(newPost);
