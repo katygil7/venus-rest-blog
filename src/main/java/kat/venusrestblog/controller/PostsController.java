@@ -1,85 +1,61 @@
 package kat.venusrestblog.controller;
-
-import kat.venusrestblog.data.Post;
 import kat.venusrestblog.data.User;
+import kat.venusrestblog.data.Post;
+import kat.venusrestblog.repository.PostsRepository;
+import kat.venusrestblog.repository.UsersRepository;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/api/posts", produces = "application/json")
 
 public class PostsController {
-    public List<Post> posts = new ArrayList<>();
-    private long nextId = 1;
+    private PostsRepository postsRepository;
+    private UsersRepository usersRepository;
+
+    public PostsController(PostsRepository postsRepository) {
+        this.postsRepository = postsRepository;
+    }
 @GetMapping (value = "")
 public List<Post> fetchPosts (){
-    return posts;
+    return postsRepository.findAll();
 }
 
     @GetMapping("/{id}")
-    public Post fetchPostsById (@PathVariable long id){
-//    search through the list of posts and return the post that matches the given id
-        Post post = findPostById(id);
-        if(post == null){
-            throw new RuntimeException("I don't know what I am doing");
-        }else{
-            return post;
-        }
-
-    }
-    private Post findPostById ( long id){
-        for (Post post:posts) {
-            if(post.getId() == id){
-                return post;
-            }
-        }
-        return null;
+    public Optional<Post> fetchPostById(@PathVariable long id) {
+        return postsRepository.findById(id);
     }
 
     @PostMapping("")
     public void createPost(@RequestBody Post newPost){
-        newPost.setId(nextId);
-
-//        using a fake author for the post
-        User fakeAuthor = new User ();
-        fakeAuthor.setId(99);
-        fakeAuthor.setUserName("fake author");
-        fakeAuthor.setEmail("fakeauthor@stuf.com");
-        newPost.setAuthor(fakeAuthor);
-
-
-        nextId++;
-
-        posts.add(newPost);
+        User author = usersRepository.findById(1L).get();
+        newPost.setAuthor(author);
+        postsRepository.save(newPost);
     }
 
     @DeleteMapping("/{id}")
     public void deletePostsById (@PathVariable long id){
-//    search through the list of posts and delete the post that matches the given id
-        Post post = findPostById(id);
-        if( post != null){
-            posts.remove(post);
-            return;
-        }
-        throw new RuntimeException("I don't know what I am doing");
+        postsRepository.deleteById(id);
     }
     @PutMapping("/{id}")
     public void updatePost( @RequestBody Post updatedPost, @PathVariable long id){
-//    find the post you want to update in the posts list
-        Post post = findPostById(id);
-        if(post == null){
-            System.out.println("Post not found");
-        }else{
-            if (updatedPost.getTitle() != null){
-                post.setTitle(updatedPost.getTitle());
-            }
-            if(updatedPost.getContent() != null){
-                post.setContent(updatedPost.getContent());
-            }
-            return;
-        }
-        throw new RuntimeException("Post not found");
+        updatedPost.setId(id);
+        postsRepository.save(updatedPost);
+////    find the post you want to update in the posts list
+//        Post post = findPostById(id);
+//        if(post == null){
+//            System.out.println("Post not found");
+//        }else{
+//            if (updatedPost.getTitle() != null){
+//                post.setTitle(updatedPost.getTitle());
+//            }
+//            if(updatedPost.getContent() != null){
+//                post.setContent(updatedPost.getContent());
+//            }
+//            return;
+//        }
+//        throw new RuntimeException("Post not found");
     }
 }

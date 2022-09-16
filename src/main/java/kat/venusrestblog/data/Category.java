@@ -15,6 +15,4 @@ public class Category {
     private String name;
 
     private Collection<Post> posts;
-
-
 }

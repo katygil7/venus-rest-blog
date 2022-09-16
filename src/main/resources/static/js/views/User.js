@@ -1,9 +1,9 @@
-
+import CreateView from "../createView.js"
 
 let me;
 export default function prepareUserHTML(props) {
     me = props.me;
-    const userPostHTML = createPostHTML();
+    const userPostHTML = createPostHTML(me);
     return`
         <h1>User Info<h1>
         <h2>${props.me.userName}<h2>
@@ -24,10 +24,11 @@ export default function prepareUserHTML(props) {
             <button id="updatePassword" name="updatePassword">Save New Password</button>    
         </form>
         <hr>
+        ${userPostHTML}
         
     `;
 }
-function createPostHTML(){
+function createPostHTML(user){
     let html = `
     <table class="table">
         <thead>
@@ -38,9 +39,22 @@ function createPostHTML(){
         </thead>
         <tbody>
     `;
-
+//    to add a row to the table for each user post
+    for (let i = 0; i < user.posts.length; i++) {
+        const post = user.posts[i];
+        html += `<tr>
+            <td>${post.title}</td>
+            <td>${post.content}</td>
+            </tr>`;
+    }
+    html += `
+    </tbody>
+    </table>`;
+    return html;
 
 }
+
+
 export function prepareUserJS(){
     doTogglePasswordHandler();
     doSavePasswordHandler();
@@ -88,12 +102,7 @@ function doSavePasswordHandler(){
 
 
 
-//line 18 problem on fetchdata js
-//button save passwordis not working on browser
-//update the userscontroller the arraylist
-//http://localhost:8080/swagger-ui/index.html#/posts-controller
-// create a postcontroller on userscontroller
-//createtable on user js on createposthtml
+
 
 
 
