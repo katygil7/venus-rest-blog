@@ -6,7 +6,8 @@ export default function Navbar(props) {
                     <a href="/about" data-link>About</a>`;
     if (isLoggedIn()) {
         navbar += `<a href="/posts" data-link>Posts</a>
-                   <a href="/me" data-link>About Me</a>`;
+                   <a href="/me" data-link>About Me</a>
+                    <a href="/logout" data-link>Logout</a>`;
     } else {
         navbar +=  `<a href="/login" data-link>Login</a>
                     <a href="/register" data-link>Register</a>`
