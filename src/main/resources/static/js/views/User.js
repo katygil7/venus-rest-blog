@@ -1,15 +1,17 @@
-import CreateView from "../createView.js"
-
+import CreateView from"../createView.js";
 let me;
 export default function prepareUserHTML(props) {
     me = props.me;
+
     const userPostHTML = createPostHTML(me);
-    return`
-        <h1>User Info<h1>
-        <h2>${props.me.userName}<h2>
+
+    // make the user's original pw available somewhere in here
+    return `
+        <h1>User Info</h1>
+        <h2>${props.me.userName}</h2>
         <h2>${props.me.email}</h2>
         
-        <form action="">
+        <form>
             <label for="oldpassword">Please enter your current password</label>
             <input type="password" id="oldpassword" name="oldpassword">
             <br>
@@ -18,19 +20,21 @@ export default function prepareUserHTML(props) {
             <br>
             <label for="confirmpassword">Confirm new password</label>
             <input type="password" id="confirmpassword" name="confirmpassword">
+            
             <br>
-              
             <button id="toggleShowPassword" name="toggleShowPassword">Show Password?</button>
-            <button id="updatePassword" name="updatePassword">Save New Password</button>    
+            <button id="updatePassword" name="updatePassword">Save New Password</button>
         </form>
+        
         <hr>
         ${userPostHTML}
         
     `;
 }
-function createPostHTML(user){
+
+function createPostHTML(user) {
     let html = `
-    <table class="table">
+        <table class="table">
         <thead>
         <tr>
             <th scope="col">Title</th>
@@ -39,7 +43,8 @@ function createPostHTML(user){
         </thead>
         <tbody>
     `;
-//    to add a row to the table for each user post
+
+    // add a row to the table for each user post
     for (let i = 0; i < user.posts.length; i++) {
         const post = user.posts[i];
         html += `<tr>
@@ -47,36 +52,21 @@ function createPostHTML(user){
             <td>${post.content}</td>
             </tr>`;
     }
-    html += `
-    </tbody>
-    </table>`;
-    return html;
 
+    // finish the table
+    html += `
+        </tbody>
+        </table>`;
+
+    return html;
 }
 
-
-export function prepareUserJS(){
+export function prepareUserJS() {
     doTogglePasswordHandler();
     doSavePasswordHandler();
 }
-function doTogglePasswordHandler() {
-    const button = document.querySelector("#toggleShowPassword");
-    button.addEventListener("click", function (event) {
-        const oldPassword = document.querySelector("#oldpassword");
-        const newPassword = document.querySelector("#newpassword");
-        const confirmPassword = document.querySelector("#confirmpassword");
-        if (confirmPassword.getAttribute("type") === "password") {
-            confirmPassword.setAttribute("type", "text");
-            oldPassword.setAttribute("type", "text");
-            newPassword.setAttribute("type", "text");
-        } else {
-            confirmPassword.setAttribute("type", "password");
-            oldPassword.setAttribute("type", "password");
-            newPassword.setAttribute("type", "password");
-        }
-    })
-}
-function doSavePasswordHandler(){
+
+function doSavePasswordHandler() {
     const button = document.querySelector("#updatePassword");
     button.addEventListener("click", function(event) {
         // grab the 3 password field values
@@ -100,13 +90,21 @@ function doSavePasswordHandler(){
     });
 }
 
-
-
-
-
-
-
-
-
-
-
+function doTogglePasswordHandler() {
+    const button = document.querySelector("#toggleShowPassword");
+    button.addEventListener("click", function(event) {
+        // grab a reference to confirmpassword
+        const oldPassword = document.querySelector("#oldpassword");
+        const newPassword = document.querySelector("#newpassword");
+        const confirmPassword = document.querySelector("#confirmpassword");
+        if(confirmPassword.getAttribute("type") === "password") {
+            confirmPassword.setAttribute("type", "text");
+            oldPassword.setAttribute("type", "text");
+            newPassword.setAttribute("type", "text");
+        } else {
+            confirmPassword.setAttribute("type", "password");
+            oldPassword.setAttribute("type", "password");
+            newPassword.setAttribute("type", "password");
+        }
+    });
+}

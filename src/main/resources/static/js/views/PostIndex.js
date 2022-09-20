@@ -1,29 +1,38 @@
 import CreateView from "../createView.js";
+import {getHeaders} from "../auth.js";
+
 let posts;
+
 export default function PostIndex(props) {
-    const postsHTML = generatePostsHTML(props.posts)
+    const postsHTML = generatePostsHTML(props.posts);
+    // save this for loading edits later
     posts = props.posts;
+
     return `
         <header>
             <h1>Posts Page</h1>
         </header>
         <main>
-            <h3>List of posts</h3>      
+              <h3>Lists of posts</h3>
             <div>
                 ${postsHTML}   
             </div>
-            <br>
-            <h2>add a post</h2>
-            <form action="">
-                <label for="title">Title</label>
-                <input id="title" name="title" type="text" placeholder="Enter tittle"><br>
+            
+            <h3>Add a post</h3>
+            <form>
+                <label for="title">Title</label><br>
+                <input id="title" name="title" type="text" placeholder="Enter title">
+                <br>
                 <label for="content">Content</label><br>
-                <textarea name="content" id="content" cols="50" rows="10" placeholder="Enter content"></textarea>
-                <button id="savePost" name="savePost">Save</button>
+                <textarea id="content" name="content" rows="10" cols="50" placeholder="Enter content"></textarea>
+                <br>
+                <button data-id="0" id="savePost" name="savePost" class="button btn-primary">Save Post</button>
             </form>
+            
         </main>
     `;
 }
+
 function generatePostsHTML(posts) {
     let postsHTML = `
         <table class="table">
@@ -51,7 +60,7 @@ function generatePostsHTML(posts) {
         }
         let authorName = "";
         if(post.author) {
-            authorName = post.author.name;
+            authorName = post.author.userName;
         }
         postsHTML += `<tr>
             <td>${post.title}</td>
@@ -66,41 +75,63 @@ function generatePostsHTML(posts) {
     return postsHTML;
 }
 
-export function PostSetup() {
+
+
+
+export function postSetup() {
     setupSaveHandler();
     setupEditHandlers();
-    setupDeleteHandlers() ;
+    setupDeleteHandlers();
 }
+
 function setupEditHandlers() {
+    // target all delete buttons
     const editButtons = document.querySelectorAll(".editPost");
+    // add click handler to all delete buttons
     for (let i = 0; i < editButtons.length; i++) {
-        editButtons[i].addEventListener("click", function (event) {
+        editButtons[i].addEventListener("click", function(event) {
+
+            // get the post id of the delete button
             const postId = parseInt(this.getAttribute("data-id"));
+
             loadPostIntoForm(postId);
         });
     }
 }
-function loadPostIntoForm(postId){
+
+function loadPostIntoForm(postId) {
+    // go find the post in the posts data that matches postId
     const post = fetchPostById(postId);
-    if (!post){
-        console.log("did not find post for id" + postId);
+    if(!post) {
+        console.log("did not find post for id " + postId);
         return;
     }
+
+    // load the post data into the form
     const titleField = document.querySelector("#title");
     const contentField = document.querySelector("#content");
     titleField.value = post.title;
     contentField.value = post.content;
+
     const saveButton = document.querySelector("#savePost");
-    saveButton.setAttribute("data-id",postId);
+    saveButton.setAttribute("data-id", postId);
 }
-function fetchPostById(postId){
+
+function fetchPostById(postId) {
     for (let i = 0; i < posts.length; i++) {
         if(posts[i].id === postId) {
             return posts[i];
         }
+
     }
+    // didn't find it so return something falsy
     return false;
 }
+
+
+
+
+
 
 function setupDeleteHandlers() {
     // target all delete buttons
@@ -116,10 +147,11 @@ function setupDeleteHandlers() {
         });
     }
 }
+
 function deletePost(postId) {
     const request = {
         method: "DELETE",
-        headers: {"Content-Type": "application/json"},
+        headers: getHeaders(),
     }
     const url = POST_API_BASE_URL + `/${postId}`;
     fetch(url, request)
@@ -132,6 +164,12 @@ function deletePost(postId) {
             CreateView("/posts");
         })
 }
+
+
+
+
+
+
 
 function setupSaveHandler() {
     const saveButton = document.querySelector("#savePost");
@@ -155,7 +193,7 @@ function savePost(postId) {
     // make the request
     const request = {
         method: "POST",
-        headers: {"Content-Type": "application/json"},
+        headers: getHeaders(),
         body: JSON.stringify(post)
     }
     let url = POST_API_BASE_URL;

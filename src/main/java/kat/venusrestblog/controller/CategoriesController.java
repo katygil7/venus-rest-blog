@@ -19,11 +19,12 @@ import java.util.List;
 @RequestMapping(value = "/api/categories", produces = "application/json")
 public class CategoriesController {
     private CategoriesRepository categoriesRepository;
-    @GetMapping("")
-    private List<Category> fetchAllCategories(){
-        return categoriesRepository.findAll();
 
+    @GetMapping("")
+    private List<Category> fetchAllCategories() {
+        return categoriesRepository.findAll();
     }
+
     @GetMapping("/search")
     private Category fetchCategoryByCategoryName(@RequestParam String categoryName) {
         Category cat = categoriesRepository.findByName(categoryName);

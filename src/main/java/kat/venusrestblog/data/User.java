@@ -1,10 +1,7 @@
 package kat.venusrestblog.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.apache.commons.lang3.builder.ToStringExclude;
 
 import javax.persistence.*;
@@ -18,6 +15,7 @@ import java.util.Collection;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @ToString
 @Entity
 @Table(name="users")
@@ -38,7 +36,7 @@ public class User {
     @Column(nullable = false, length = 100)
     private String password;
 
-    @Column(nullable = false)
+    @Column()
     private LocalDate createdAt;
 
     @NotNull
@@ -49,4 +47,13 @@ public class User {
     @OneToMany(mappedBy = "author")
     @JsonIgnoreProperties("author")
     private Collection<Post> posts;
+
+    // the below properties are only for the S3 service
+//    @Column(name = "photo_filename")
+//    @ToString.Exclude
+//    private String photoFileName;
+//
+//    @Transient
+//    private String photourl;
+
 }
