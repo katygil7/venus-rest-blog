@@ -28,7 +28,6 @@ export default function prepareUserHTML(props) {
         
         <hr>
         ${userPostHTML}
-        
     `;
 }
 

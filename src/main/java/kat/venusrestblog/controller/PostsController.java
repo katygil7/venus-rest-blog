@@ -2,6 +2,7 @@ package kat.venusrestblog.controller;
 import kat.venusrestblog.data.Category;
 import kat.venusrestblog.data.User;
 import kat.venusrestblog.data.Post;
+import kat.venusrestblog.data.UserRole;
 import kat.venusrestblog.error.misc.FieldHelper;
 import kat.venusrestblog.repository.CategoriesRepository;
 import kat.venusrestblog.repository.PostsRepository;
@@ -46,6 +47,12 @@ public class PostsController {
     @PostMapping("")
     @PreAuthorize("hasAuthority('USER') || hasAuthority('ADMIN')")
     public void createPost(@RequestBody Post newPost, OAuth2Authentication auth) {
+        if (newPost == null || newPost.getTitle().length() < 1){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Title cannot be blank!");
+        }
+        if(newPost.getContent() == null || newPost.getContent().length() < 1){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Content cannot be blank!");
+        }
 
         String userName = auth.getName();
         User author = usersRepository.findByUserName(userName);
@@ -67,20 +74,38 @@ public class PostsController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('USER') || hasAuthority('ADMIN')")
-    public void deletePostById(@PathVariable long id) {
+    public void deletePostById(@PathVariable long id, OAuth2Authentication auth) {
+        String userName = auth.getName();
+        User loggedInUser = usersRepository.findByUserName(userName);
+
         Optional<Post> optionalPost = postsRepository.findById(id);
         if(optionalPost.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post id " + id + " not found");
         }
-        postsRepository.deleteById(id);
+//        grab thte original post from the optional and check the logged in user
+        Post originalPost = optionalPost.get();
+//        admin can delete anyone's post. author of the post can delete only their posts
+        if (loggedInUser.getRole() != UserRole.ADMIN && originalPost.getAuthor().getId() != loggedInUser.getId()){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not yo post!");
+        }
+
+            postsRepository.deleteById(id);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('USER') || hasAuthority('ADMIN')")
-    public void updatePost(@RequestBody Post updatedPost, @PathVariable long id) {
-        Optional<Post> originalPost = postsRepository.findById(id);
-        if(originalPost.isEmpty()) {
+    public void updatePost(@RequestBody Post updatedPost, @PathVariable long id, OAuth2Authentication auth) {
+        Optional<Post> optionalPost = postsRepository.findById(id);
+        if(optionalPost.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post " + id + " not found");
+        }
+        Post originalPost = optionalPost.get();
+
+        String userName = auth.getName();
+        User loggedInUser = usersRepository.findByUserName(userName);
+        // admin can update anyone's post. author of the post can update only their posts
+        if(loggedInUser.getRole() != UserRole.ADMIN && originalPost.getAuthor().getId() != loggedInUser.getId()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not yo post!");
         }
 
         // in case id is not in the request body (i.e., updatedPost), set it
@@ -88,8 +113,8 @@ public class PostsController {
         updatedPost.setId(id);
 
         // copy any new field values FROM updatedPost TO originalPost
-        BeanUtils.copyProperties(updatedPost, originalPost.get(), FieldHelper.getNullPropertyNames(updatedPost));
+        BeanUtils.copyProperties(updatedPost, originalPost, FieldHelper.getNullPropertyNames(updatedPost));
 
-        postsRepository.save(originalPost.get());
+        postsRepository.save(originalPost);
     }
 }
