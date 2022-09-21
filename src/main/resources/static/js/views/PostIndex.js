@@ -1,5 +1,6 @@
 import CreateView from "../createView.js";
 import {getHeaders} from "../auth.js";
+import {showNotification} from "../messaging.js";
 
 let posts;
 
@@ -183,6 +184,15 @@ function savePost(postId) {
     // get the title and content for the new/updated post
     const titleField = document.querySelector("#title");
     const contentField = document.querySelector("#content");
+
+    if(titleField.value.trim().length < 1) {
+        showNotification("Title cannot be blank!", "warning");
+        return;
+    }
+    if(contentField.value.trim().length < 1) {
+        showNotification("Content cannot be blank!", "warning");
+        return;
+    }
 
     // make the new/updated post object
     const post = {
